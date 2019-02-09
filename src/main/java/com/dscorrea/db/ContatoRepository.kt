@@ -7,6 +7,17 @@ import org.jetbrains.anko.db.*
 
 class ContatoRepository(val context: Context) {
 
+    fun isContato(telefone: String) : Boolean = context.database.use {
+        select(CONTATOS_TABLE_NAME, "count(*) as total")
+                .whereArgs("telefone = {telefone}","telefone" to telefone)
+                .parseSingle(object: MapRowParser<Boolean> {
+                    override fun parseRow(columns: Map<String, Any?>): Boolean {
+                        val total = columns.getValue("total")
+                        return total.toString().toInt() > 0;
+                    }
+                })
+    }
+
     fun findAll(): ArrayList<Contato> = context.database.use {
         val contatos = ArrayList<Contato>()
 
